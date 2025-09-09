@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
 import { PostService } from './post.service';
 import type { Post as IPost } from './post.interface';
 
@@ -35,4 +35,17 @@ export class PostController {
     createPost(@Body() post: Omit<IPost, 'id' | 'createdAt' | 'updatedAt'>): IPost {
         return this.postService.createPost(post)
     }
+
+    @Put(':id')
+    @HttpCode(HttpStatus.OK)
+    updatePost(@Param('id', ParseIntPipe) id: number, @Body() post: Partial<Omit<IPost, 'id' | 'createdAt' | 'updatedAt'>>): IPost {
+        return this.postService.updatePost(id, post);
+    };
+
+    @Delete(':id')
+    @HttpCode(HttpStatus.OK)
+    deletePost(@Param('id', ParseIntPipe) id: string): {message: string}{
+        return this.postService.deletePost(parseInt(id));
+    }
+
 }

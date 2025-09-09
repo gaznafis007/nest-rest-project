@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Post } from './post.interface';
 
 @Injectable()
@@ -39,5 +39,27 @@ export class PostService {
         }
         this.posts.push(newPost);
         return newPost
+    }
+
+    updatePost(id: number, post: Partial<Omit<Post, "id" | "createdAt">>): Post {
+        const existingPostIndex = this.posts.findIndex(post => post.id === id);
+        if(existingPostIndex === -1){
+            throw new NotFoundException(`Post with id: ${id} not found`);
+        }
+        const updatedPost: Post = {
+            ...this.posts[existingPostIndex],
+            ...post
+        }
+        this.posts[existingPostIndex] = updatedPost;
+        return updatedPost;
+    }
+
+    deletePost(id: number) : {message: string}{
+        const existingPostIndex = this.posts.findIndex(post => post.id === id);
+        if(existingPostIndex === -1){
+            throw new NotFoundException(`Post with id: ${id} not found`);
+        };
+        this.posts.splice(existingPostIndex, 1);
+        return {message: `Post with id: ${id} deleted successfully`};
     }
 }
